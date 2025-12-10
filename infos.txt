@@ -1,0 +1,9 @@
+GLM API:
+URL:https://open.bigmodel.cn/api/paas/v4
+API KEY:c082aaaa38dc43ffbe672420862114a5.oyqQWrcJRi0J7BzG
+
+Mysql:
+server:172.19.10.40:33306
+database:faqmanagment
+user:root
+password:report_TaySEM
