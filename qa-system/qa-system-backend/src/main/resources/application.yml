@@ -1,0 +1,72 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: qa-system-backend
+  
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+  
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://172.19.10.40:33306/faqmanagment?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:report_TaySEM}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  
+  redis:
+    host: ${SPRING_REDIS_HOST:localhost}
+    port: 6379
+    password: 
+    database: 0
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+  
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+# MinIO配置
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin123}
+  bucket-name: qa-system
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:mySecretKey123456789mySecretKey123456789}
+  expiration: 86400000  # 24小时
+
+# AI配置 (GLM)
+ai:
+  openai:
+    api-key: ${OPENAI_API_KEY:c082aaaa38dc43ffbe672420862114a5.oyqQWrcJRi0J7BzG}
+    base-url: ${OPENAI_BASE_URL:https://open.bigmodel.cn/api/paas/v4/}
+    model: glm-4
+    max-tokens: 2000
+    temperature: 0.7
+
+# 日志配置
+logging:
+  level:
+    com.qa.system: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

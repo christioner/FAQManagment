@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: qa-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - qa-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: qa-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - qa-network
+
+  backend:
+    build:
+      context: ./qa-system-backend
+      dockerfile: Dockerfile
+    container_name: qa-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://172.19.10.40:33306/faqmanagment?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: report_TaySEM
+      SPRING_REDIS_HOST: redis
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      OPENAI_API_KEY: c082aaaa38dc43ffbe672420862114a5.oyqQWrcJRi0J7BzG
+      OPENAI_BASE_URL: https://open.bigmodel.cn/api/paas/v4/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - minio
+    networks:
+      - qa-network
+
+  frontend:
+    build:
+      context: ./qa-system-frontend
+      dockerfile: Dockerfile
+    container_name: qa-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - qa-network
+
+volumes:
+  redis_data:
+  minio_data:
+
+networks:
+  qa-network:
+    driver: bridge
